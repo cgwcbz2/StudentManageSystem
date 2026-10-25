@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auggie.student_server.mapper.WarningMapper">
+    <select id="findWarnings" resultType="com.auggie.student_server.entity.WarningInfo">
+        SELECT sct.sctid, s.sid, s.sname, c.cid, c.cname, t.tid, t.tname,
+               sct.grade, sct.term,
+               (SELECT MAX(wf.created_at)
+                FROM studentms.warning_followup wf
+                WHERE wf.sctid = sct.sctid) AS lastFollowupAt
+        FROM studentms.sct sct
+        INNER JOIN studentms.s s ON sct.sid = s.sid
+        INNER JOIN studentms.c c ON sct.cid = c.cid
+        INNER JOIN studentms.t t ON sct.tid = t.tid
+        WHERE sct.grade &lt; 60
+        <if test="term != null and term != ''">
+            AND sct.term = #{term}
+        </if>
+        <if test="cid != null">
+            AND sct.cid = #{cid}
+        </if>
+        <if test="tid != null">
+            AND sct.tid = #{tid}
+        </if>
+        ORDER BY sct.term DESC, c.cname, s.sid
+    </select>
+
+    <select id="findFollowups" resultType="com.auggie.student_server.entity.WarningFollowup">
+        SELECT id, sctid, content, operator_tid AS operatorTid, created_at AS createdAt
+        FROM studentms.warning_followup
+        WHERE sctid = #{sctid}
+        ORDER BY created_at DESC, id DESC
+    </select>
+
+    <select id="findFollowupById" resultType="com.auggie.student_server.entity.WarningFollowup">
+        SELECT id, sctid, content, operator_tid AS operatorTid, created_at AS createdAt
+        FROM studentms.warning_followup
+        WHERE id = #{id}
+    </select>
+
+    <select id="countStudentCourse" resultType="int">
+        SELECT COUNT(*) FROM studentms.sct WHERE sctid = #{sctid}
+    </select>
+
+    <select id="countWarning" resultType="int">
+        SELECT COUNT(*) FROM studentms.sct WHERE sctid = #{sctid} AND grade &lt; 60
+    </select>
+
+    <select id="countTeacher" resultType="int">
+        SELECT COUNT(*) FROM studentms.t WHERE tid = #{tid}
+    </select>
+
+    <insert id="insertFollowup" parameterType="com.auggie.student_server.entity.WarningFollowup"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO studentms.warning_followup (sctid, content, operator_tid, created_at)
+        VALUES (#{sctid}, #{content}, #{operatorTid}, UTC_TIMESTAMP())
+    </insert>
+</mapper>

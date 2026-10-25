@@ -160,6 +160,22 @@ LOCK TABLES `t` WRITE;
 INSERT INTO `t` VALUES (4,'李玉民','123'),(6,'admin','123'),(13,'张三','123');
 /*!40000 ALTER TABLE `t` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `warning_followup`
+--
+
+DROP TABLE IF EXISTS `warning_followup`;
+CREATE TABLE `warning_followup` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sctid` int(11) NOT NULL,
+  `content` text NOT NULL,
+  `operator_tid` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_warning_followup_sctid_created_at` (`sctid`, `created_at`),
+  CONSTRAINT `warning_followup_ibfk_1` FOREIGN KEY (`sctid`) REFERENCES `sct` (`sctid`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

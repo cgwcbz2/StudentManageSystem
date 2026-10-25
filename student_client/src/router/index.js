@@ -38,6 +38,8 @@ import teacherQueryGradeCourse from "@/views/Teacher/teacherGradeCourseManage/te
 import teacherGradeCourseList from "@/views/Teacher/teacherGradeCourseManage/teacherGradeCourseList";
 import teacherEditorGradeCourse from "@/views/Teacher/teacherGradeCourseManage/teacherEditorGradeCourse";
 import updateInfo from "@/components/updateInfo";
+import warningManage from "@/views/Warning/index";
+import warningList from "@/views/Warning/warningList";
 
 Vue.use(VueRouter)
 
@@ -211,6 +213,21 @@ const routes = [
             meta: {requireAuth: true}
           }
         ]
+      },
+      {
+        path: '/adminWarningManage',
+        name: '达标预警',
+        component: warningManage,
+        meta: {requireAuth: true},
+        children: [
+          {
+            path: '/adminWarningList',
+            name: '预警名单',
+            component: warningList,
+            props: {scope: 'admin'},
+            meta: {requireAuth: true}
+          }
+        ]
       }
     ]
   },
@@ -285,6 +302,21 @@ const routes = [
             path: '/teacherEditorGradeCourse',
             name: '编辑成绩',
             component: teacherEditorGradeCourse,
+            meta: {requireAuth: true}
+          }
+        ]
+      },
+      {
+        path: '/teacherWarningManage',
+        name: '达标预警',
+        component: warningManage,
+        meta: {requireAuth: true},
+        children: [
+          {
+            path: '/teacherWarningList',
+            name: '预警名单',
+            component: warningList,
+            props: {scope: 'teacher'},
             meta: {requireAuth: true}
           }
         ]

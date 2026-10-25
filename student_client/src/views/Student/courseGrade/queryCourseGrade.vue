@@ -43,6 +43,15 @@
             label="成绩"
             width="150">
         </el-table-column>
+        <el-table-column
+            label="达标状态"
+            width="150">
+          <template slot-scope="scope">
+            <el-tag :type="achievementStatus(scope.row.grade).type">
+              {{ achievementStatus(scope.row.grade).label }}
+            </el-tag>
+          </template>
+        </el-table-column>
       </el-table>
       <p>
         平均成绩：{{ avg }}
@@ -62,6 +71,14 @@
 <script>
 export default {
   methods: {
+    achievementStatus(grade) {
+      if (grade === null || grade === undefined || grade === '') {
+        return { label: '待考核', type: 'info' }
+      }
+      return Number(grade) < 60
+        ? { label: '未达标预警', type: 'danger' }
+        : { label: '已达标', type: 'success' }
+    },
     changePage(page) {
       page = page - 1
       const that = this
