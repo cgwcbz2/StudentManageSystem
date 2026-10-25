@@ -11,7 +11,10 @@ import java.util.List;
 public interface WarningMapper {
     List<WarningInfo> findWarnings(@Param("term") String term,
                                    @Param("cid") Integer cid,
-                                   @Param("tid") Integer tid);
+                                   @Param("tid") Integer tid,
+                                   @Param("sid") Integer sid,
+                                   @Param("sname") String sname,
+                                   @Param("view") String view);
 
     List<WarningFollowup> findFollowups(@Param("sctid") Integer sctid);
 

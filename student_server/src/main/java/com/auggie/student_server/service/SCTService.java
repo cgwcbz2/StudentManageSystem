@@ -4,6 +4,7 @@ import com.auggie.student_server.entity.CourseTeacherInfo;
 import com.auggie.student_server.entity.SCTInfo;
 import com.auggie.student_server.entity.StudentCourseTeacher;
 import com.auggie.student_server.mapper.StudentCourseTeacherMapper;
+import com.auggie.student_server.mapper.AssessmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ import java.util.Map;
 public class SCTService {
     @Autowired
     private StudentCourseTeacherMapper studentCourseTeacherMapper;
+    @Autowired
+    private AssessmentMapper assessmentMapper;
 
     public List<CourseTeacherInfo> findBySid(Integer sid, String term) {
         return studentCourseTeacherMapper.findByStudentId(sid, term);
@@ -40,6 +43,12 @@ public class SCTService {
     }
 
     public boolean deleteBySCT(StudentCourseTeacher studentCourseTeacher) {
+        List<StudentCourseTeacher> records = studentCourseTeacherMapper.findBySCT(studentCourseTeacher);
+        for (StudentCourseTeacher record : records) {
+            if (assessmentMapper.countHistory(record.getSctid()) > 0) {
+                return false;
+            }
+        }
         return studentCourseTeacherMapper.deleteBySCT(studentCourseTeacher);
     }
 
@@ -49,7 +58,7 @@ public class SCTService {
         studentCourseTeacher.setCid(cid);
         studentCourseTeacher.setTid(tid);
         studentCourseTeacher.setTerm(term);
-        return studentCourseTeacherMapper.deleteBySCT(studentCourseTeacher);
+        return deleteBySCT(studentCourseTeacher);
     }
 
     public SCTInfo findByIdWithTerm(Integer sid, Integer cid, Integer tid, String term) {

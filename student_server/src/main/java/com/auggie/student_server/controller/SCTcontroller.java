@@ -4,6 +4,9 @@ import com.auggie.student_server.entity.CourseTeacherInfo;
 import com.auggie.student_server.entity.SCTInfo;
 import com.auggie.student_server.entity.StudentCourseTeacher;
 import com.auggie.student_server.service.SCTService;
+import com.auggie.student_server.service.AssessmentService;
+import com.auggie.student_server.entity.AssessmentHistory;
+import com.auggie.student_server.entity.AssessmentSubmission;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,18 @@ import java.util.Map;
 public class SCTcontroller {
     @Autowired
     private SCTService sctService;
+    @Autowired
+    private AssessmentService assessmentService;
+
+    @GetMapping("/{sctid}/assessments")
+    public List<AssessmentHistory> assessments(@PathVariable Integer sctid) {
+        return assessmentService.findHistory(sctid);
+    }
+
+    @PostMapping("/{sctid}/assessments")
+    public AssessmentHistory assess(@PathVariable Integer sctid, @RequestBody AssessmentSubmission submission) {
+        return assessmentService.record(sctid, submission);
+    }
 
     @PostMapping("/save")
     public String save(@RequestBody StudentCourseTeacher studentCourseTeacher) {
@@ -69,7 +84,7 @@ public class SCTcontroller {
                               @PathVariable Integer tid,
                               @PathVariable String term,
                               @PathVariable Integer grade) {
-        return sctService.updateById(sid, cid, tid, term, grade);
+        return assessmentService.recordLegacy(sid, cid, tid, term, grade);
     }
 
     @GetMapping("/deleteById/{sid}/{cid}/{tid}/{term}")

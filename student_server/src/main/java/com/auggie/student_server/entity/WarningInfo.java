@@ -15,6 +15,8 @@ public class WarningInfo {
     private Integer tid;
     private String tname;
     private Float grade;
+    private Integer passScore;
+    private String status;
     private String term;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime lastFollowupAt;

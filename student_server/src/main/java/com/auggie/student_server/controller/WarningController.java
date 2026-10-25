@@ -27,8 +27,11 @@ public class WarningController {
     @GetMapping
     public List<WarningInfo> findWarnings(@RequestParam(required = false) String term,
                                           @RequestParam(required = false) Integer cid,
-                                          @RequestParam(required = false) Integer tid) {
-        return warningService.findWarnings(term, cid, tid);
+                                          @RequestParam(required = false) Integer tid,
+                                          @RequestParam(required = false) Integer sid,
+                                          @RequestParam(required = false) String sname,
+                                          @RequestParam(defaultValue = "active") String view) {
+        return warningService.findWarnings(term, cid, tid, sid, sname, view);
     }
 
     @GetMapping("/{sctid}/followups")

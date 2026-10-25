@@ -17,8 +17,12 @@ public class WarningService {
         this.warningMapper = warningMapper;
     }
 
-    public List<WarningInfo> findWarnings(String term, Integer cid, Integer tid) {
-        return warningMapper.findWarnings(term, cid, tid);
+    public List<WarningInfo> findWarnings(String term, Integer cid, Integer tid,
+                                          Integer sid, String sname, String view) {
+        if (!"active".equals(view) && !"all".equals(view)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "view 只能为 active 或 all");
+        }
+        return warningMapper.findWarnings(term, cid, tid, sid, sname, view);
     }
 
     public List<WarningFollowup> findFollowups(Integer sctid) {

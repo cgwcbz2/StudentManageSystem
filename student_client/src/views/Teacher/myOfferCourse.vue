@@ -2,7 +2,7 @@
   <div>
     <el-container>
       <el-main>
-        <h1>当前学期开设的课程</h1>
+        <h1>当前学期开设的技能项目</h1>
         <el-card>
           <el-table
               :data="tableData"
@@ -12,19 +12,15 @@
             <el-table-column
                 fixed
                 prop="cid"
-                label="课程号"
+                label="技能编号"
                 width="150">
             </el-table-column>
             <el-table-column
                 prop="cname"
-                label="课程名"
+                label="技能项目"
                 width="150">
             </el-table-column>
-            <el-table-column
-                prop="ccredit"
-                label="学分"
-                width="150">
-            </el-table-column>
+            <el-table-column prop="passScore" label="达标线" width="100"></el-table-column>
           </el-table>
           <el-pagination
               background

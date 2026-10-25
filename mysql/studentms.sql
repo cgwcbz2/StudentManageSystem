@@ -22,9 +22,7 @@ SET NAMES 'UTF8';
 set character set  utf8;
 drop database if exists studentms;
 CREATE DATABASE studentms DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-GRANT all ON studentms.* TO 'root'@'%';
 use studentms;
-
 
 DROP TABLE IF EXISTS `c`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -33,6 +31,7 @@ CREATE TABLE `c` (
   `cid` int(11) NOT NULL AUTO_INCREMENT,
   `cname` varchar(30) NOT NULL,
   `ccredit` tinyint(4) DEFAULT NULL,
+  `pass_score` tinyint unsigned NOT NULL DEFAULT 60,
   PRIMARY KEY (`cid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -43,7 +42,7 @@ CREATE TABLE `c` (
 
 LOCK TABLES `c` WRITE;
 /*!40000 ALTER TABLE `c` DISABLE KEYS */;
-INSERT INTO `c` VALUES (7,'数据结构',6),(8,'组合数学',3),(9,'计算机网络',5),(10,'计算机组成原理',5),(11,'RJC教你做选课系统',10);
+INSERT INTO `c` (`cid`, `cname`, `ccredit`) VALUES (7,'数据结构',6),(8,'组合数学',3),(9,'计算机网络',5),(10,'计算机组成原理',5),(11,'RJC教你做选课系统',10);
 /*!40000 ALTER TABLE `c` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -176,6 +175,24 @@ CREATE TABLE `warning_followup` (
   KEY `idx_warning_followup_sctid_created_at` (`sctid`, `created_at`),
   CONSTRAINT `warning_followup_ibfk_1` FOREIGN KEY (`sctid`) REFERENCES `sct` (`sctid`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `assessment_history` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `sctid` int(11) NOT NULL,
+  `grade` float NOT NULL,
+  `pass_score_snapshot` tinyint unsigned NOT NULL,
+  `operator_tid` int(11) DEFAULT NULL,
+  `recorded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_assessment_history_sct_time` (`sctid`, `recorded_at`, `id`),
+  CONSTRAINT `assessment_history_ibfk_1` FOREIGN KEY (`sctid`) REFERENCES `sct` (`sctid`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `assessment_history` (`sctid`, `grade`, `pass_score_snapshot`, `operator_tid`, `recorded_at`, `source`)
+SELECT sct.sctid, sct.grade, c.pass_score, NULL, UTC_TIMESTAMP(), 'initial_import'
+FROM `sct` sct INNER JOIN `c` c ON c.cid = sct.cid
+WHERE sct.grade IS NOT NULL;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -185,9 +202,5 @@ CREATE TABLE `warning_followup` (
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
-GRANT all ON studentms.* TO 'root'@'%';
-
-
 
 -- Dump completed on 2022-02-15 13:44:52

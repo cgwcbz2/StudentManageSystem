@@ -4,6 +4,8 @@ import com.auggie.student_server.entity.Course;
 import com.auggie.student_server.mapper.CourseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,11 +75,20 @@ public class CourseService {
     }
 
     public boolean updateById(Course course) {
+        validatePassScore(course);
         return courseMapper.updateById(course);
     }
 
     public boolean insertCourse(Course course) {
+        validatePassScore(course);
         return courseMapper.insertCourse(course);
+    }
+
+    private void validatePassScore(Course course) {
+        if (course == null || course.getPassScore() == null
+                || course.getPassScore() < 1 || course.getPassScore() > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "达标线需为 1 至 100 分");
+        }
     }
 
     public boolean deleteById(Integer cid) {

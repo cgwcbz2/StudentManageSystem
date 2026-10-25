@@ -8,17 +8,17 @@
       <el-table-column
           fixed
           prop="cid"
-          label="课程号"
+          label="技能编号"
           width="150">
       </el-table-column>
       <el-table-column
           prop="cname"
-          label="课程名"
+          label="技能项目"
           width="150">
       </el-table-column>
       <el-table-column
-          prop="ccredit"
-          label="学分"
+          prop="passScore"
+          label="达标线"
           width="150">
       </el-table-column>
       <el-table-column

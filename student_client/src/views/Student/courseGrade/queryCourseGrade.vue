@@ -15,12 +15,12 @@
         <el-table-column
             fixed
             prop="cid"
-            label="课号"
+            label="技能编号"
             width="150">
         </el-table-column>
         <el-table-column
             prop="cname"
-            label="课程号"
+            label="技能项目"
             width="150">
         </el-table-column>
         <el-table-column
@@ -34,28 +34,28 @@
             width="150">
         </el-table-column>
         <el-table-column
-            prop="ccredit"
-            label="学分"
+            prop="passScore"
+            label="达标线"
             width="150">
         </el-table-column>
         <el-table-column
             prop="grade"
-            label="成绩"
+            label="最新考核"
             width="150">
         </el-table-column>
         <el-table-column
             label="达标状态"
             width="150">
           <template slot-scope="scope">
-            <el-tag :type="achievementStatus(scope.row.grade).type">
-              {{ achievementStatus(scope.row.grade).label }}
+            <el-tag :type="achievementStatus(scope.row.grade, scope.row.passScore).type">
+              {{ achievementStatus(scope.row.grade, scope.row.passScore).label }}
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="操作" width="110">
+          <template slot-scope="scope"><el-button type="text" @click="openHistory(scope.row)">考核历史</el-button></template>
+        </el-table-column>
       </el-table>
-      <p>
-        平均成绩：{{ avg }}
-      </p>
       <el-pagination
           background
           layout="prev, pager, next"
@@ -65,19 +65,33 @@
       >
       </el-pagination>
     </el-card>
+    <el-dialog title="历次考核" :visible.sync="historyVisible" width="650px">
+      <el-table :data="history" border>
+        <el-table-column prop="grade" label="分数"></el-table-column>
+        <el-table-column prop="passScoreSnapshot" label="当时达标线"></el-table-column>
+        <el-table-column label="当时状态"><template slot-scope="scope">{{ achievementStatus(scope.row.grade, scope.row.passScoreSnapshot).label }}</template></el-table-column>
+        <el-table-column prop="recordedAt" label="记录时间"></el-table-column>
+        <el-table-column label="来源"><template slot-scope="scope">{{ scope.row.source === 'initial_import' ? '初始导入' : '考核录入' }}</template></el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
   methods: {
-    achievementStatus(grade) {
+    achievementStatus(grade, passScore) {
       if (grade === null || grade === undefined || grade === '') {
         return { label: '待考核', type: 'info' }
       }
-      return Number(grade) < 60
+      return Number(grade) < Number(passScore || 60)
         ? { label: '未达标预警', type: 'danger' }
         : { label: '已达标', type: 'success' }
+    },
+    async openHistory(row) {
+      const response = await this.$axios.get('http://localhost:10086/SCT/' + row.sctid + '/assessments')
+      this.history = response.data
+      this.historyVisible = true
     },
     changePage(page) {
       page = page - 1
@@ -94,7 +108,8 @@ export default {
       pageSize: 10,
       total: null,
       tmpList: null,
-      avg: 0,
+      historyVisible: false,
+      history: [],
       term: sessionStorage.getItem('currentTerm'),
       termList: null
     }
@@ -117,15 +132,6 @@ export default {
           let length = that.tmpList.length
           let ans = (end < length) ? end : length
           that.tableData = that.tmpList.slice(start, end)
-          let totalScore = 0
-          for (let i = 0; i < that.total; i++) {
-            totalScore += that.tmpList[i].ccredit
-            that.avg += that.tmpList[i].ccredit * that.tmpList[i].grade
-          }
-          if (totalScore === 0)
-            that.avg = 0
-          else
-            that.avg /= totalScore
         })
       },
       immediate: true

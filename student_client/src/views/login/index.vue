@@ -4,7 +4,7 @@
       <el-header >
         <div style="text-align: center; font-size: 25px; font-weight: bolder">
           <i class="el-icon-s-home" style="margin-right: 25px"></i>
-          选课管理系统
+          学生技能达标预警跟踪系统
         </div>
       </el-header>
       <el-main>
@@ -32,7 +32,6 @@
               <el-form-item>
                 <el-button type="primary" @click="submitForm('ruleForm')">登陆</el-button>
                 <el-button @click="resetForm('ruleForm')">重置</el-button>
-                <el-button @click="test('ruleForm')">test</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -182,9 +181,6 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-    },
-    test(forName) {
-      console.log(this.ruleForm)
     }
   }
 }
