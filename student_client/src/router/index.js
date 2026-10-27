@@ -150,12 +150,6 @@ const routes = [
         ]
       },
       {
-        path: '/editorGradeCourse',
-        name: '录入考核',
-        component: editorGradeCourse,
-        meta: {requireAuth: true, hideInMenu: true}
-      },
-      {
         path: '/adminWarningManage',
         name: '达标预警',
         component: warningManage,
@@ -166,6 +160,12 @@ const routes = [
             name: '预警跟踪',
             component: warningList,
             props: {scope: 'admin'},
+            meta: {requireAuth: true}
+          },
+          {
+            path: '/editorGradeCourse',
+            name: '录入成绩',
+            component: editorGradeCourse,
             meta: {requireAuth: true}
           }
         ]
@@ -212,12 +212,6 @@ const routes = [
         ]
       },
       {
-        path: '/teacherEditorGradeCourse',
-        name: '录入考核',
-        component: teacherEditorGradeCourse,
-        meta: {requireAuth: true, hideInMenu: true}
-      },
-      {
         path: '/teacherWarningManage',
         name: '达标预警',
         component: warningManage,
@@ -228,6 +222,12 @@ const routes = [
             name: '预警跟踪',
             component: warningList,
             props: {scope: 'teacher'},
+            meta: {requireAuth: true}
+          },
+          {
+            path: '/teacherEditorGradeCourse',
+            name: '录入成绩',
+            component: teacherEditorGradeCourse,
             meta: {requireAuth: true}
           }
         ]
