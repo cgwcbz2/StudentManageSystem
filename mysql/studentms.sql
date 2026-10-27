@@ -33,7 +33,7 @@ CREATE TABLE `c` (
   `ccredit` tinyint(4) DEFAULT NULL,
   `pass_score` tinyint unsigned NOT NULL DEFAULT 60,
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `c` (
 
 LOCK TABLES `c` WRITE;
 /*!40000 ALTER TABLE `c` DISABLE KEYS */;
-INSERT INTO `c` (`cid`, `cname`, `ccredit`) VALUES (7,'数据结构',6),(8,'组合数学',3),(9,'计算机网络',5),(10,'计算机组成原理',5),(11,'RJC教你做选课系统',10);
+INSERT INTO `c` (`cid`, `cname`, `ccredit`) VALUES (1,'数据结构',6),(2,'组合数学',3),(3,'计算机网络',5),(4,'计算机组成原理',5);
 /*!40000 ALTER TABLE `c` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -72,7 +72,7 @@ CREATE TABLE `ct` (
 
 LOCK TABLES `ct` WRITE;
 /*!40000 ALTER TABLE `ct` DISABLE KEYS */;
-INSERT INTO `ct` VALUES (5,8,4,'22-春季学期'),(6,7,4,'22-春季学期'),(7,10,13,'22-春季学期'),(8,9,13,'22-春季学期'),(9,11,4,'22-春季学期');
+INSERT INTO `ct` VALUES (5,2,4,'22-春季学期'),(6,1,4,'22-春季学期'),(7,4,13,'22-春季学期'),(8,3,13,'22-春季学期');
 /*!40000 ALTER TABLE `ct` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -131,7 +131,7 @@ CREATE TABLE `sct` (
 
 LOCK TABLES `sct` WRITE;
 /*!40000 ALTER TABLE `sct` DISABLE KEYS */;
-INSERT INTO `sct` VALUES (10,2,8,4,1,'22-春季学期'),(11,2,10,13,NULL,'22-春季学期'),(12,2,7,4,NULL,'22-春季学期'),(13,4,8,4,10,'22-春季学期'),(14,4,7,4,NULL,'22-春季学期'),(15,4,10,13,NULL,'22-春季学期');
+INSERT INTO `sct` VALUES (10,2,2,4,1,'22-春季学期'),(11,2,4,13,NULL,'22-春季学期'),(12,2,1,4,NULL,'22-春季学期'),(13,4,2,4,10,'22-春季学期'),(14,4,1,4,NULL,'22-春季学期'),(15,4,4,13,NULL,'22-春季学期');
 /*!40000 ALTER TABLE `sct` ENABLE KEYS */;
 UNLOCK TABLES;
 
