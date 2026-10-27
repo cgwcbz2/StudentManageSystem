@@ -81,7 +81,7 @@ const routes = [
             path: '/studentList',
             name: '学生列表',
             component: studentList,
-            meta: {requireAuth: true, hideInMenu: true},
+            meta: {requireAuth: true},
           },
           {
             path: '/editorStudent',
