@@ -7,9 +7,9 @@
             <el-option v-for="item in courseOptions" :key="item.cid" :label="item.cname" :value="item.cid"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="学生" prop="sctid">
-          <el-select v-model="ruleForm.sctid" filterable placeholder="请选择学生" style="width: 100%" :disabled="!ruleForm.cid" @change="selectStudent">
-            <el-option v-for="item in studentOptions" :key="item.sctid" :label="item.sname + '（学号 ' + item.sid + '）'" :value="item.sctid"></el-option>
+        <el-form-item label="学生" prop="sid">
+          <el-select v-model="ruleForm.sid" filterable placeholder="请选择学生" style="width: 100%" :disabled="!ruleForm.cid" @change="selectStudent">
+            <el-option v-for="item in studentOptions" :key="item.sid" :label="item.sname + '（学号 ' + item.sid + '）'" :value="item.sid"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="考核分数" prop="grade">
@@ -60,6 +60,8 @@ export default {
     return {
       loading: false,
       records: [],
+      courses: [],
+      students: [],
       history: [],
       ruleForm: {
         cid: null,
@@ -74,7 +76,7 @@ export default {
       },
       rules: {
         cid: [{ required: true, message: '请选择技能项目', trigger: 'change' }],
-        sctid: [{ required: true, message: '请选择学生', trigger: 'change' }],
+        sid: [{ required: true, message: '请选择学生', trigger: 'change' }],
         grade: [
           { required: true, message: '请输入考核分数', trigger: 'change' },
           { type: 'number', message: '请输入数字', trigger: 'change' },
@@ -86,15 +88,15 @@ export default {
   computed: {
     courseOptions() {
       const options = []
-      this.records.forEach(record => {
-        if (!options.some(item => item.cid === record.cid)) {
-          options.push({cid: record.cid, cname: record.cname})
+      this.courses.forEach(course => {
+        if (!options.some(item => item.cid === course.cid)) {
+          options.push(course)
         }
       })
       return options
     },
     studentOptions() {
-      return this.records.filter(record => record.cid === this.ruleForm.cid)
+      return this.students
     }
   },
   created() {
@@ -105,12 +107,24 @@ export default {
       this.loading = true
       const term = this.$route.query.term || sessionStorage.getItem('currentTerm')
       const filters = {term: term}
+      const currentTid = Number(sessionStorage.getItem('tid'))
       if (this.scope === 'teacher') {
-        filters.tid = sessionStorage.getItem('tid')
+        filters.tid = String(currentTid)
       }
       try {
-        const response = await this.$axios.post('http://localhost:10086/SCT/findBySearch', filters)
-        this.records = response.data
+        const courseRequest = this.scope === 'teacher'
+          ? this.$axios.get('http://localhost:10086/courseTeacher/findMyCourse/' + currentTid + '/' + term)
+          : this.$axios.post('http://localhost:10086/courseTeacher/findCourseTeacherInfo', {})
+        const [recordResponse, courseResponse, studentResponse] = await Promise.all([
+          this.$axios.post('http://localhost:10086/SCT/findBySearch', filters),
+          courseRequest,
+          this.$axios.post('http://localhost:10086/student/findBySearch', {})
+        ])
+        this.records = recordResponse.data
+        this.courses = courseResponse.data.map(course => Object.assign({}, course, {
+          tid: course.tid || currentTid
+        }))
+        this.students = studentResponse.data
         const query = this.$route.query
         const selected = this.records.find(record =>
           (query.sctid && record.sctid === Number(query.sctid)) ||
@@ -129,24 +143,38 @@ export default {
       }
     },
     selectCourse(cid) {
+      const course = this.courseOptions.find(item => item.cid === cid)
       this.ruleForm = {
         cid: cid,
         sctid: null,
         sid: null,
-        tid: null,
-        cname: null,
+        tid: course ? course.tid : null,
+        cname: course ? course.cname : null,
         sname: null,
         grade: null,
         term: this.$route.query.term || sessionStorage.getItem('currentTerm'),
-        passScore: null
+        passScore: course ? course.passScore : null
       }
       this.history = []
     },
-    selectStudent(sctid) {
-      const selected = this.records.find(record => record.sctid === sctid)
+    selectStudent(sid) {
+      const selected = this.records.find(record =>
+        record.sid === sid &&
+        record.cid === this.ruleForm.cid &&
+        record.tid === this.ruleForm.tid &&
+        record.term === this.ruleForm.term
+      )
       if (selected) {
         this.applyRecord(selected)
+        return
       }
+      const student = this.students.find(item => item.sid === sid)
+      this.ruleForm.sctid = null
+      this.ruleForm.sid = sid
+      this.ruleForm.sname = student ? student.sname : null
+      this.ruleForm.grade = null
+      this.history = []
+      this.$nextTick(() => this.$refs.ruleForm && this.$refs.ruleForm.clearValidate())
     },
     applyRecord(record) {
       this.ruleForm = Object.assign({}, record, {grade: null})
@@ -161,11 +189,36 @@ export default {
       const response = await this.$axios.get('http://localhost:10086/SCT/' + this.ruleForm.sctid + '/assessments')
       this.history = response.data
     },
+    async ensureStudentSkill() {
+      if (this.ruleForm.sctid) return this.ruleForm.sctid
+      const relation = {
+        sid: this.ruleForm.sid,
+        cid: this.ruleForm.cid,
+        tid: this.ruleForm.tid,
+        term: this.ruleForm.term
+      }
+      await this.$axios.post('http://localhost:10086/SCT/save', relation)
+      const response = await this.$axios.post('http://localhost:10086/SCT/findBySearch', {
+        sid: String(relation.sid),
+        cid: String(relation.cid),
+        tid: String(relation.tid),
+        term: relation.term
+      })
+      const record = response.data.find(item =>
+        item.sid === relation.sid && item.cid === relation.cid &&
+        item.tid === relation.tid && item.term === relation.term
+      )
+      if (!record) throw new Error('学生技能关联创建失败')
+      this.ruleForm.sctid = record.sctid
+      this.records.push(record)
+      return record.sctid
+    },
     submitForm(formName) {
       this.$refs[formName].validate(async valid => {
         if (!valid) return
         try {
-          const response = await this.$axios.post('http://localhost:10086/SCT/' + this.ruleForm.sctid + '/assessments', {
+          const sctid = await this.ensureStudentSkill()
+          const response = await this.$axios.post('http://localhost:10086/SCT/' + sctid + '/assessments', {
             grade: this.ruleForm.grade,
             operatorTid: Number(sessionStorage.getItem('tid'))
           })
