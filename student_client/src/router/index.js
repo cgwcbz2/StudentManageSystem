@@ -5,7 +5,6 @@ import admin from '../views/Admin/index';
 import home from '../views/home';
 import studentManage from '../views/Admin/studentManage/index'
 import addStudent from "@/views/Admin/studentManage/addStudent";
-import studentList from "@/views/Admin/studentManage/studentList";
 import editorStudent from "@/views/Admin/studentManage/editorStudent";
 import teacherManage from "@/views/Admin/teacherManage/index"
 import addTeacher from "@/views/Admin/teacherManage/addTeacher";
@@ -80,7 +79,7 @@ const routes = [
           {
             path: '/studentList',
             name: '学生列表',
-            component: studentList,
+            component: queryStudent,
             meta: {requireAuth: true},
           },
           {
@@ -91,14 +90,8 @@ const routes = [
           },
           {
             path: '/queryStudent',
-            name: '搜索',
-            component: queryStudent,
-            meta: {requireAuth: true},
-            children: [{
-              path: '/queryStudent/studentList',
-              component: studentList,
-              meta: {requireAuth: true, hideInMenu: true}
-            }]
+            redirect: '/studentList',
+            meta: {requireAuth: true, hideInMenu: true}
           }
         ]
       },
