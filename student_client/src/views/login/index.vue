@@ -7,7 +7,7 @@
           学生技能达标预警跟踪系统
         </div>
       </el-header>
-      <el-main>
+      <el-main class="login-main">
         <el-card class="login-module">
           <div slot="header" class="clearfix">
             <span style="text-align: center; font-size: 20px; font-family: 'Microsoft YaHei'">
@@ -187,15 +187,17 @@ export default {
 </script>
 
 <style>
+.login-main {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
 .login-module {
-  /*width: 380px;*/
-  /*height: 325px;*/
-  margin-top: 60px;
-  /*border: none;*/
-  position: absolute;
-  right: 500px;
   text-align: center;
-  width: 30%;
+  width: 420px;
+  max-width: 100%;
 }
 .el-header {
   background-color: #B3C0D1;
