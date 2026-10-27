@@ -136,7 +136,7 @@ const routes = [
           },
           {
             path: '/queryCourse',
-            name: '查询技能项目',
+            name: '技能列表',
             component: queryCourse,
             meta: {requireAuth: true}
           },
