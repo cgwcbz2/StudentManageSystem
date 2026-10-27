@@ -25,8 +25,7 @@ import selectCourse from "@/views/Student/selectCourse/selectCourse";
 import querySelectedCourse from "@/views/Student/selectCourse/querySelectedCourse";
 import studentCourseGrade from "@/views/Student/courseGrade/index";
 import queryCourseGrade from "@/views/Student/courseGrade/queryCourseGrade";
-import editorGradeCourse from "@/views/Admin/gradeCourseManage/editorGradeCourse";
-import teacherEditorGradeCourse from "@/views/Teacher/teacherGradeCourseManage/teacherEditorGradeCourse";
+import gradeEntry from "@/views/Warning/gradeEntry";
 import updateInfo from "@/components/updateInfo";
 import warningManage from "@/views/Warning/index";
 import warningList from "@/views/Warning/warningList";
@@ -165,7 +164,8 @@ const routes = [
           {
             path: '/editorGradeCourse',
             name: '录入成绩',
-            component: editorGradeCourse,
+            component: gradeEntry,
+            props: {scope: 'admin', returnPath: '/adminWarningList'},
             meta: {requireAuth: true}
           }
         ]
@@ -227,7 +227,8 @@ const routes = [
           {
             path: '/teacherEditorGradeCourse',
             name: '录入成绩',
-            component: teacherEditorGradeCourse,
+            component: gradeEntry,
+            props: {scope: 'teacher', returnPath: '/teacherWarningList'},
             meta: {requireAuth: true}
           }
         ]
