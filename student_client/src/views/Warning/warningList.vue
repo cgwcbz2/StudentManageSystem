@@ -69,21 +69,21 @@
     </el-container>
 
     <el-dialog :title="selected ? selected.sname + ' - 跟进记录' : '跟进记录'" :visible.sync="dialogVisible" width="600px">
-      <el-table :data="followups" border stripe v-loading="followupLoading" style="width: 100%">
+      <el-table :data="followups" border stripe v-loading="followupLoading" empty-text="暂无跟进记录" style="width: 100%">
         <el-table-column prop="content" label="跟进内容" min-width="250"></el-table-column>
         <el-table-column label="记录时间" width="170">
           <template slot-scope="scope">{{ formatTime(scope.row.createdAt) }}</template>
         </el-table-column>
-        <el-table-column prop="operatorTid" label="教师号" width="80"></el-table-column>
+        <el-table-column prop="operatorTid" label="操作人编号" width="100"></el-table-column>
       </el-table>
-      <el-form v-if="isTeacher && selected && selected.status === 'warning'" style="margin-top: 20px">
+      <el-form v-if="canAddFollowup" style="margin-top: 20px">
         <el-form-item label="添加跟进备注">
           <el-input v-model="newContent" type="textarea" :rows="3" maxlength="1000" placeholder="填写本次跟进情况"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">关闭</el-button>
-        <el-button v-if="isTeacher && selected && selected.status === 'warning'" type="primary" :loading="saving" @click="saveFollowup">保存备注</el-button>
+        <el-button v-if="canAddFollowup" type="primary" :loading="saving" @click="saveFollowup">保存备注</el-button>
       </span>
     </el-dialog>
     <el-dialog title="历次考核" :visible.sync="historyVisible" width="680px">
@@ -135,6 +135,9 @@ export default {
   computed: {
     isTeacher() {
       return this.scope === 'teacher'
+    },
+    canAddFollowup() {
+      return this.isTeacher && this.selected && this.selected.status === 'warning'
     },
     pageRows() {
       const start = (this.currentPage - 1) * this.pageSize

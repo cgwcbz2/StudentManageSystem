@@ -176,6 +176,10 @@ CREATE TABLE `warning_followup` (
   CONSTRAINT `warning_followup_ibfk_1` FOREIGN KEY (`sctid`) REFERENCES `sct` (`sctid`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+INSERT INTO `warning_followup` (`sctid`, `content`, `operator_tid`, `created_at`) VALUES
+(10,'已联系学生，提醒按计划完成技能训练。',4,UTC_TIMESTAMP()),
+(13,'已制定补练计划，下次考核前完成相关练习。',4,UTC_TIMESTAMP());
+
 CREATE TABLE `assessment_history` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `sctid` int(11) NOT NULL,
