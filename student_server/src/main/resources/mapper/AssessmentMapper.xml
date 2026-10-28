@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auggie.student_server.mapper.AssessmentMapper">
+    <select id="findSctId" resultType="int">
+        SELECT sctid FROM studentms.sct
+        WHERE sid = #{sid} AND cid = #{cid} AND tid = #{tid} AND term = #{term}
+        LIMIT 1
+    </select>
+    <select id="findPassScore" resultType="int">
+        SELECT c.pass_score FROM studentms.sct sct
+        INNER JOIN studentms.c c ON c.cid = sct.cid
+        WHERE sct.sctid = #{sctid}
+    </select>
+    <select id="countTeacher" resultType="int">
+        SELECT COUNT(*) FROM studentms.t WHERE tid = #{tid}
+    </select>
+    <update id="updateGrade">
+        UPDATE studentms.sct SET grade = #{grade} WHERE sctid = #{sctid}
+    </update>
+    <insert id="insertHistory">
+        INSERT INTO studentms.assessment_history
+            (sctid, grade, pass_score_snapshot, operator_tid, recorded_at, source)
+        VALUES (#{sctid}, #{grade}, #{passScore}, #{operatorTid}, UTC_TIMESTAMP(), #{source})
+    </insert>
+    <select id="findHistory" resultType="com.auggie.student_server.entity.AssessmentHistory">
+        SELECT id, sctid, grade, pass_score_snapshot AS passScoreSnapshot,
+               operator_tid AS operatorTid, recorded_at AS recordedAt, source
+        FROM studentms.assessment_history WHERE sctid = #{sctid}
+        ORDER BY recorded_at DESC, id DESC
+    </select>
+    <select id="countHistory" resultType="int">
+        SELECT COUNT(*) FROM studentms.assessment_history WHERE sctid = #{sctid}
+    </select>
+</mapper>

@@ -1,17 +1,17 @@
 <template>
-  <div>
+  <div class="login-page">
     <el-container>
       <el-header >
         <div style="text-align: center; font-size: 25px; font-weight: bolder">
           <i class="el-icon-s-home" style="margin-right: 25px"></i>
-          选课管理系统
+          学生技能达标预警跟踪系统
         </div>
       </el-header>
-      <el-main>
+      <el-main class="login-main">
         <el-card class="login-module">
           <div slot="header" class="clearfix">
             <span style="text-align: center; font-size: 20px; font-family: 'Microsoft YaHei'">
-              <p><i class="el-icon-office-building" style="margin-right: 18px"></i>登陆</p>
+              <p><i class="el-icon-office-building" style="margin-right: 18px"></i>账户登录</p>
             </span>
           </div>
           <div>
@@ -30,9 +30,8 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">登陆</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 <el-button @click="resetForm('ruleForm')">重置</el-button>
-                <el-button @click="test('ruleForm')">test</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -84,11 +83,11 @@ export default {
             let form = {tid: that.ruleForm.id, password: that.ruleForm.password}
             console.log(form)
             axios.post("http://localhost:10086/teacher/login", form).then(function (resp) {
-              console.log("教师登陆验证信息：" + resp.data)
+              console.log("教师登录验证信息：" + resp.data)
               check = resp.data
               if (check === true) {
                 axios.get("http://localhost:10086/teacher/findById/" + that.ruleForm.id).then(function (resp) {
-                  console.log("登陆页正在获取用户信息" + resp.data)
+                  console.log("登录页正在获取用户信息" + resp.data)
                   name = resp.data.tname
 
                   sessionStorage.setItem("token", 'true')
@@ -101,7 +100,7 @@ export default {
                   if (that.ruleForm.type === 'admin' && name === 'admin') {
                     that.$message({
                       showClose: true,
-                      message: '登陆成功，欢迎 ' + name + '!',
+                      message: '登录成功，欢迎 ' + name + '!',
                       type: 'success'
                     });
                     that.$router.push('/admin')
@@ -109,7 +108,7 @@ export default {
                   else if(that.ruleForm.type === 'teacher' && name !== 'admin') {
                     that.$message({
                       showClose: true,
-                      message: '登陆成功，欢迎 ' + name + '!',
+                      message: '登录成功，欢迎 ' + name + '!',
                       type: 'success'
                     });
                     that.$router.push('/teacher')
@@ -117,7 +116,7 @@ export default {
                   else {
                     that.$message({
                       showClose: true,
-                      message: 'admin 登陆失败，检查登陆类型',
+                      message: 'admin 登录失败，检查登录类型',
                       type: 'error'
                     });
                   }
@@ -126,7 +125,7 @@ export default {
               else {
                 that.$message({
                   showClose: true,
-                  message: '登陆失败，检查账号密码',
+                  message: '登录失败，检查账号密码',
                   type: 'error'
                 });
               }
@@ -135,11 +134,11 @@ export default {
           else if (that.ruleForm.type === 'student') {
             let form = {sid: that.ruleForm.id, password: that.ruleForm.password}
             axios.post("http://localhost:10086/student/login", form).then(function (resp) {
-              console.log("学生登陆验证信息：" + resp.data)
+              console.log("学生登录验证信息：" + resp.data)
               check = resp.data
               if (check === true) {
                 axios.get("http://localhost:10086/student/findById/" + that.ruleForm.id).then(function (resp) {
-                  console.log("登陆页正在获取用户信息" + resp.data)
+                  console.log("登录页正在获取用户信息" + resp.data)
                   name = resp.data.sname
 
                   sessionStorage.setItem("token", 'true')
@@ -149,7 +148,7 @@ export default {
 
                   that.$message({
                     showClose: true,
-                    message: '登陆成功，欢迎 ' + name + '!',
+                    message: '登录成功，欢迎 ' + name + '!',
                     type: 'success'
                   });
 
@@ -182,24 +181,29 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-    },
-    test(forName) {
-      console.log(this.ruleForm)
     }
   }
 }
 </script>
 
 <style>
-.login-module {
-  /*width: 380px;*/
-  /*height: 325px;*/
-  margin-top: 60px;
-  /*border: none;*/
-  position: absolute;
-  right: 500px;
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+}
+.login-page .login-main {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.login-page .login-module {
   text-align: center;
-  width: 30%;
+  width: 420px;
+  max-width: 100%;
+  margin: 0 auto;
 }
 .el-header {
   background-color: #B3C0D1;

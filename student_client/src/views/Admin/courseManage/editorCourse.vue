@@ -1,16 +1,15 @@
 <template>
   <div>
     <el-form style="width: 60%" :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="课程名称" prop="cname">
+      <el-form-item label="技能项目" prop="cname">
         <el-input v-model="ruleForm.cname" :value="ruleForm.cname"></el-input>
       </el-form-item>
-      <el-form-item label="学分" prop="ccredit">
-        <el-input v-model.number="ruleForm.ccredit" :value="ruleForm.ccredit"></el-input>
+      <el-form-item label="达标线" prop="passScore">
+        <el-input-number v-model="ruleForm.passScore" :min="1" :max="100" :step="1"></el-input-number>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
-        <el-button @click="test">test</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -22,15 +21,15 @@ export default {
       ruleForm: {
         cid: null,
         cname: null,
-        ccredit: null
+        ccredit: null,
+        passScore: 60
       },
       rules: {
         cname: [
           { required: true, message: '请输入名称', trigger: 'blur' },
         ],
-        ccredit: [
-          { required: true, message: '请输入学分', trigger: 'change' },
-          { type: 'number', message: '请输入数字', trigger: 'change'},
+        passScore: [
+          { required: true, type: 'integer', min: 1, max: 100, message: '达标线需为 1 至 100 分整数', trigger: 'change' },
         ],
       }
     };
@@ -75,9 +74,6 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
-    },
-    test() {
-      console.log(this.ruleForm)
     }
   }
 }

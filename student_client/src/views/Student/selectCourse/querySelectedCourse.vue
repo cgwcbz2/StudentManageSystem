@@ -8,12 +8,12 @@
         <el-table-column
             fixed
             prop="cid"
-            label="课号"
+            label="技能编号"
             width="150">
         </el-table-column>
         <el-table-column
             prop="cname"
-            label="课程号"
+            label="技能项目"
             width="150">
         </el-table-column>
         <el-table-column
@@ -27,23 +27,18 @@
             width="150">
         </el-table-column>
         <el-table-column
-            prop="ccredit"
-            label="学分"
-            width="150">
-        </el-table-column>
-        <el-table-column
             label="操作"
             width="100">
 
           <template slot-scope="scope">
             <el-popconfirm
-                confirm-button-text='退课'
+                confirm-button-text='退出'
                 cancel-button-text='取消'
                 icon="el-icon-info"
-                title="确定退课？"
+                title="确定退出该技能？已考核项目不能退出。"
                 @confirm="deleteSCT(scope.row)"
             >
-              <el-button slot="reference" type="text" size="small">退课</el-button>
+              <el-button slot="reference" type="text" size="small">退出</el-button>
             </el-popconfirm>
           </template>
         </el-table-column>
@@ -80,7 +75,7 @@ export default {
         if (resp.data === true) {
           that.$message({
             showClose: true,
-            message: '退课成功',
+            message: '已退出技能',
             type: 'success'
           });
           window.location.reload()
@@ -88,7 +83,7 @@ export default {
         else {
           that.$message({
             showClose: true,
-            message: '退课失败，请联系管理员',
+            message: '退出失败；已考核项目需保留历史记录',
             type: 'error'
           });
         }

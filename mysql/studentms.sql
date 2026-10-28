@@ -22,9 +22,7 @@ SET NAMES 'UTF8';
 set character set  utf8;
 drop database if exists studentms;
 CREATE DATABASE studentms DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-GRANT all ON studentms.* TO 'root'@'%';
 use studentms;
-
 
 DROP TABLE IF EXISTS `c`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -33,8 +31,9 @@ CREATE TABLE `c` (
   `cid` int(11) NOT NULL AUTO_INCREMENT,
   `cname` varchar(30) NOT NULL,
   `ccredit` tinyint(4) DEFAULT NULL,
+  `pass_score` tinyint unsigned NOT NULL DEFAULT 60,
   PRIMARY KEY (`cid`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +42,7 @@ CREATE TABLE `c` (
 
 LOCK TABLES `c` WRITE;
 /*!40000 ALTER TABLE `c` DISABLE KEYS */;
-INSERT INTO `c` VALUES (7,'数据结构',6),(8,'组合数学',3),(9,'计算机网络',5),(10,'计算机组成原理',5),(11,'RJC教你做选课系统',10);
+INSERT INTO `c` (`cid`, `cname`, `ccredit`) VALUES (1,'数据结构',6),(2,'组合数学',3),(3,'计算机网络',5),(4,'计算机组成原理',5);
 /*!40000 ALTER TABLE `c` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -73,7 +72,7 @@ CREATE TABLE `ct` (
 
 LOCK TABLES `ct` WRITE;
 /*!40000 ALTER TABLE `ct` DISABLE KEYS */;
-INSERT INTO `ct` VALUES (5,8,4,'22-春季学期'),(6,7,4,'22-春季学期'),(7,10,13,'22-春季学期'),(8,9,13,'22-春季学期'),(9,11,4,'22-春季学期');
+INSERT INTO `ct` VALUES (5,2,4,'22-春季学期'),(6,1,4,'22-春季学期'),(7,4,13,'22-春季学期'),(8,3,13,'22-春季学期');
 /*!40000 ALTER TABLE `ct` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -98,7 +97,7 @@ CREATE TABLE `s` (
 
 LOCK TABLES `s` WRITE;
 /*!40000 ALTER TABLE `s` DISABLE KEYS */;
-INSERT INTO `s` VALUES (1,'阮健乘','1234'),(2,'张四','123'),(3,'李四','1234'),(4,'彭昊辉','123456'),(6,'林春霞','123'),(7,'董一超','12345'),(8,'董超','123'),(9,'张千','10086'),(10,'李万','10085'),(14,'薇尔莉特','123'),(21,'庄亮','123'),(22,'钟平','1234'),(23,'李煜豪','123');
+INSERT INTO `s` VALUES (1,'张三','1234'),(2,'李四','123'),(3,'王五','1234'),(4,'赵六','123456'),(6,'孙七','123'),(7,'周八','12345'),(8,'吴九','123'),(9,'郑十','10086'),(10,'王小明','10085'),(14,'李小红','123'),(21,'张小华','123'),(22,'陈小军','1234'),(23,'刘小雨','123');
 /*!40000 ALTER TABLE `s` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,7 +131,7 @@ CREATE TABLE `sct` (
 
 LOCK TABLES `sct` WRITE;
 /*!40000 ALTER TABLE `sct` DISABLE KEYS */;
-INSERT INTO `sct` VALUES (10,2,8,4,1,'22-春季学期'),(11,2,10,13,NULL,'22-春季学期'),(12,2,7,4,NULL,'22-春季学期'),(13,4,8,4,10,'22-春季学期'),(14,4,7,4,NULL,'22-春季学期'),(15,4,10,13,NULL,'22-春季学期');
+INSERT INTO `sct` VALUES (10,2,2,4,1,'22-春季学期'),(11,2,4,13,NULL,'22-春季学期'),(12,2,1,4,NULL,'22-春季学期'),(13,4,2,4,10,'22-春季学期'),(14,4,1,4,NULL,'22-春季学期'),(15,4,4,13,NULL,'22-春季学期');
 /*!40000 ALTER TABLE `sct` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -157,9 +156,47 @@ CREATE TABLE `t` (
 
 LOCK TABLES `t` WRITE;
 /*!40000 ALTER TABLE `t` DISABLE KEYS */;
-INSERT INTO `t` VALUES (4,'李玉民','123'),(6,'admin','123'),(13,'张三','123');
+INSERT INTO `t` VALUES (4,'张老师','123'),(6,'admin','123'),(13,'李老师','123');
 /*!40000 ALTER TABLE `t` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `warning_followup`
+--
+
+DROP TABLE IF EXISTS `warning_followup`;
+CREATE TABLE `warning_followup` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sctid` int(11) NOT NULL,
+  `content` text NOT NULL,
+  `operator_tid` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_warning_followup_sctid_created_at` (`sctid`, `created_at`),
+  CONSTRAINT `warning_followup_ibfk_1` FOREIGN KEY (`sctid`) REFERENCES `sct` (`sctid`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `warning_followup` (`sctid`, `content`, `operator_tid`, `created_at`) VALUES
+(10,'已联系学生，提醒按计划完成技能训练。',4,UTC_TIMESTAMP()),
+(13,'已制定补练计划，下次考核前完成相关练习。',4,UTC_TIMESTAMP());
+
+CREATE TABLE `assessment_history` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `sctid` int(11) NOT NULL,
+  `grade` float NOT NULL,
+  `pass_score_snapshot` tinyint unsigned NOT NULL,
+  `operator_tid` int(11) DEFAULT NULL,
+  `recorded_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_assessment_history_sct_time` (`sctid`, `recorded_at`, `id`),
+  CONSTRAINT `assessment_history_ibfk_1` FOREIGN KEY (`sctid`) REFERENCES `sct` (`sctid`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `assessment_history` (`sctid`, `grade`, `pass_score_snapshot`, `operator_tid`, `recorded_at`, `source`)
+SELECT sct.sctid, sct.grade, c.pass_score, NULL, UTC_TIMESTAMP(), 'initial_import'
+FROM `sct` sct INNER JOIN `c` c ON c.cid = sct.cid
+WHERE sct.grade IS NOT NULL;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -169,9 +206,5 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
-GRANT all ON studentms.* TO 'root'@'%';
-
-
 
 -- Dump completed on 2022-02-15 13:44:52

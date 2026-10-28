@@ -16,11 +16,6 @@
           width="120">
       </el-table-column>
       <el-table-column
-          prop="password"
-          label="密码"
-          width="120">
-      </el-table-column>
-      <el-table-column
           label="操作"
           width="100">
         <template slot-scope="scope">
@@ -62,12 +57,7 @@ export default {
             type: 'success'
           });
           console.log(that.tmpList === null)
-          if (that.tmpList === null) {
-            window.location.reload()
-          }
-          else {
-            that.$router.push('/queryStudent')
-          }
+          that.loadStudents(that.ruleForm)
         }
         else {
           that.$message({
@@ -107,6 +97,22 @@ export default {
           sid: row.sid
         }
       })
+    },
+    loadStudents(ruleForm) {
+      const that = this
+      const request = {
+        sid: ruleForm.sid,
+        sname: ruleForm.sname,
+        password: ruleForm.password ? 'fuzzy' : null
+      }
+      that.tmpList = null
+      that.total = null
+      that.tableData = null
+      axios.post('http://localhost:10086/student/findBySearch', request).then(function (resp) {
+        that.tmpList = resp.data
+        that.total = resp.data.length
+        that.tableData = that.tmpList.slice(0, that.pageSize)
+      })
     }
   },
 
@@ -115,41 +121,19 @@ export default {
       tableData: null,
       pageSize: 7,
       total: null,
-      ruleForm: null,
       tmpList: null
     }
   },
-
-  created() {
-    if (this.tmpList !== null)
-      this.tmpList = null
-    const that = this
-    // 是否从查询页跳转
-    this.ruleForm = this.$route.query.ruleForm
-    if (this.$route.query.ruleForm === undefined || (this.ruleForm.sid === null && this.ruleForm.sname === null)) {
-      axios.get('http://localhost:10086/student/getLength').then(function (resp) {
-        console.log("获取列表总长度: " + resp.data)
-        that.total = resp.data
-      })
-
-      axios.get('http://localhost:10086/student/findByPage/0/' + that.pageSize).then(function (resp) {
-        that.tableData = resp.data
-      })
-    }
-    else {
-      // 从查询页跳转并且含查询
-      console.log('正在查询跳转数据')
-      console.log(this.ruleForm)
-      axios.post('http://localhost:10086/student/findBySearch', this.ruleForm).then(function (resp) {
-        console.log('获取查询数据：')
-        that.tmpList = resp.data
-        that.total = resp.data.length
-        console.log(that.tmpList)
-        let start = 0, end = that.pageSize
-        let length = that.tmpList.length
-        let ans = end < length ? end : length
-        that.tableData = that.tmpList.slice(start, ans)
-      })
+  props: {
+    ruleForm: Object
+  },
+  watch: {
+    ruleForm: {
+      handler(newRuleForm) {
+        this.loadStudents(newRuleForm)
+      },
+      deep: true,
+      immediate: true
     }
   }
 }

@@ -6,10 +6,6 @@
 
 <script>
 export default {
-  name: "index"
+  name: 'WarningManage'
 }
 </script>
-
-<style scoped>
-
-</style>

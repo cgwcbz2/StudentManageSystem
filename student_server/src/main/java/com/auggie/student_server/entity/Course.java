@@ -20,4 +20,5 @@ public class Course {
     private Integer cid;
     private String cname;
     private Integer ccredit;
+    private Integer passScore;
 }

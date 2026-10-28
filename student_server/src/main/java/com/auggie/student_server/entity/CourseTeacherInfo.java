@@ -17,10 +17,12 @@ import org.apache.ibatis.type.Alias;
 @AllArgsConstructor
 @Alias("CourseTeacherInfo")
 public class CourseTeacherInfo {
+    private Integer sctid;
     private Integer cid;
     private Integer tid;
     private String cname;
     private String tname;
     private Integer ccredit;
     private Float grade;
+    private Integer passScore;
 }

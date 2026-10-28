@@ -17,6 +17,7 @@ import org.apache.ibatis.type.Alias;
 @AllArgsConstructor
 @Alias("SCTInfo")
 public class SCTInfo {
+    private Integer sctid;
     private Integer sid;
     private Integer tid;
     private Integer cid;
@@ -25,4 +26,5 @@ public class SCTInfo {
     private String cname;
     private Float grade;
     private String term;
+    private Integer passScore;
 }

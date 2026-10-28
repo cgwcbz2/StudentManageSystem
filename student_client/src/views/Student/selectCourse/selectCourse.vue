@@ -13,13 +13,13 @@
             <el-form-item label="教师模糊查询">
               <el-switch v-model="ruleForm.tFuzzy"></el-switch>
             </el-form-item>
-            <el-form-item label="课程号" prop="cid">
+            <el-form-item label="技能编号" prop="cid">
               <el-input v-model.number="ruleForm.cid"></el-input>
             </el-form-item>
-            <el-form-item label="课程名" prop="cname">
+            <el-form-item label="技能项目" prop="cname">
               <el-input v-model.number="ruleForm.cname"></el-input>
             </el-form-item>
-            <el-form-item label="课程模糊查询">
+            <el-form-item label="项目模糊查询">
               <el-switch v-model="ruleForm.cFuzzy"></el-switch>
             </el-form-item>
             <el-form-item>
